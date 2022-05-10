@@ -1,0 +1,15 @@
+
+#form-settings {
+  margin-top: 20px;
+  line-height: 300%;
+  text-align: center;
+}
+
+#create-bin {
+  margin-top: 20px;
+}
+
+.selects-bin, #bin-name {
+  max-width: 200px;
+  display: inline;
+}

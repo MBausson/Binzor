@@ -1,0 +1,80 @@
+﻿@page "/"
+@using System.Diagnostics
+@using BinzorModels
+@inject IJSRuntime iJSRuntime;
+@inject NavigationManager NavManager
+
+<PageTitle>Binzor - New bin</PageTitle>
+
+<div id="container">
+
+    <textarea id="bin"></textarea>
+
+    <div id="form-settings">
+        <h3>Your bin's settings</h3>
+
+        <hr/>
+
+        <div>
+
+            <div>
+                <label>Language:</label>
+                <select id="language" class="selects-bin form-select form-select-sm">
+                    <option value="Plain text" selected>Plaintext</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Visibility:</label>
+                <select id="accessibility" class="selects-bin form-select form-select-sm">
+                    <option value="public" selected>Public</option>
+                    <option value="private">Private (url access only)</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Name:</label>
+                <input id="bin-name" type="text" class="form-control"/>
+            </div>
+
+            <div>
+                <button id="create-bin" type="button" class="btn btn-success" @onclick="OnSendClick">Create this bin</button>
+            </div>
+
+        </div>
+    </div>
+    
+</div>
+
+@code {
+    
+    IJSObjectReference module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //  Creates codemirror editor
+        module = await iJSRuntime.InvokeAsync<IJSObjectReference>("import", "./Pages/Index.razor.js");
+        await module.InvokeVoidAsync("loadTextarea", "bin");
+        await module.InvokeVoidAsync("populateLanguageSelect", "language");
+    }
+
+    private async void OnSendClick()
+    {
+        string content = await module.InvokeAsync<string>("getBinContent");
+        Dictionary<string, string> values = await module.InvokeAsync<Dictionary<string, string>>("getSettingsForm");
+
+        if (content.Length < 3){
+            await module.InvokeVoidAsync("resetEditor");
+            return;
+        }
+
+        //  Creates new bin and redirects to it
+        using var response = await new HttpClient().PostAsync($"{Program.BASE_URL}/BinzorFile/Create?&name={values["name"]}&visibility={values["visibility"]}&language={values["language"]}", new StringContent(content));
+
+        BinzorBinFile bbf = await response.Content.ReadFromJsonAsync<BinzorBinFile>();
+        
+        await Task.Delay(110);
+        NavManager.NavigateTo($"/{bbf.Identifier}");
+    }
+
+}

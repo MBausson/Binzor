@@ -1,0 +1,22 @@
+﻿@page "/apiindex"
+
+<div id="container">
+    
+    <h2>The binzor API</h2>
+    <hr />
+    
+    <p>
+        The binzor API lets third-party users to access and create binzor pastes. <br/>
+        The pastes created are stored in the <b>Bins</b> folder.
+        
+        <hr />
+        <b>[GET] /BinzorFile/Read</b> -- Takes an identifier as input. The API ensures that no path manipulation can exist (ex: entering ../stuff.txt as identifier)
+        <br/>
+        <b>[POST] /BinzorFile/Create</b> -- Takes the paste's content, as well as the name, language and accessibility as input. The response returns the created paste if no error occured.
+    </p>
+    
+</div>
+
+@code {
+    
+}

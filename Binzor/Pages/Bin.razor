@@ -1,0 +1,85 @@
+﻿@page "/{Identifier}"
+@using BinzorModels
+@inject IJSRuntime iJSRuntime;
+
+
+@if (BinFile != null){
+    
+    <PageTitle>Binzor - @BinFile.Identifier</PageTitle>
+    
+    <textarea id="bin" />
+    
+    <hr />
+    
+    <div id="bin-infos">
+        <h2><u>@BinFile.Name</u> (<i>@BinFile.Identifier</i>)</h2>
+        
+        <label>Language: <b>@BinFile.Language</b></label>
+        <br/>
+        
+        <label>Visibility: <b>@BinFile.Visibility.ToString()</b></label>
+        <br/>
+        
+        <button id="copy" class="btn btn-success" @onclick="ClickCopy">Copy bin's content</button>
+        
+    </div>
+    
+}
+else if (!IsFound){
+    
+    <PageTitle>Binzor - Error</PageTitle>
+    
+    <b>The specified bin does not exist.</b>
+}
+else{
+    
+    <PageTitle>Binzor - fetching...</PageTitle>
+    
+    <b>Fetching specified bin...</b>
+}
+
+@code {
+    [Parameter]
+    public string? Identifier { get; set; }
+    
+    private BinzorBinFile BinFile { get; set; }
+    private bool IsFound = true;
+
+    private event EventHandler PageReady;
+    
+    IJSObjectReference module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        PageReady += InitPage;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        module = await iJSRuntime.InvokeAsync<IJSObjectReference>("import", "./Pages/Bin.razor.js");
+
+        using var response = await new HttpClient().GetAsync($"{Program.BASE_URL}/BinzorFile/Read?identifier={Identifier}");
+        
+        if (!response.IsSuccessStatusCode){
+            IsFound = false;
+            return;
+        }
+        
+        BinFile = await response.Content.ReadFromJsonAsync<BinzorBinFile>();
+        
+        Console.WriteLine((int)BinFile.Visibility);
+        PageReady?.Invoke(null, null);
+    }
+
+    private async void InitPage(object sender, EventArgs eventArgs)
+    {
+        await module.InvokeVoidAsync("loadModeScript", BinFile.Language);
+        await module.InvokeVoidAsync("loadTextarea", "bin", BinFile);
+    }
+
+    private async void ClickCopy()
+    {
+        await module.InvokeVoidAsync("copyText", BinFile.Content);
+    }
+
+}

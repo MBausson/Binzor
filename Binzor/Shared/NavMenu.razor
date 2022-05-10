@@ -1,0 +1,34 @@
+﻿@using BinzorModels
+@using System.Net
+@inject NavigationManager NavManager
+
+<div>
+    <nav class="navbar" id="page-nb">
+        @*
+        <a href="/" class="nav-link nb-link">Binzor</a>
+        *@
+        <a href="/" class="nav-link nb-link" id="bar-icon"><img src="icon.png"/></a>
+        <a href="/information" class="nav-link nb-link">Informations</a>
+        <a href="/apiindex" class="nav-link nb-link">API</a>
+        
+        <div id="search-container">
+            <input id="search-bin" type="text" class="form-text" placeholder="Search a bin..." @bind="_searchValue" @onkeyup="OnSearchKeyUp" >
+        </div>
+    </nav>
+</div>
+
+@code {
+
+    private string _searchValue { get; set; } = "";
+
+    private async void OnSearchKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter"){
+            if (_searchValue.Length == 0) return;
+            
+            NavManager.NavigateTo($"/{_searchValue}", forceLoad: true);
+        }
+    }
+
+}
+

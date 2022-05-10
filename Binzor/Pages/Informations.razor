@@ -1,0 +1,39 @@
+﻿@page "/information"
+
+<div id="container">
+    <h2>The Binzor project</h2>
+    <hr/>
+    
+    <p>This projects let me discord razor.</p>
+    <br />
+    <p>The application is not intended to be used as a serious pastebin-like website. However, if you like it, you can install it on a server and use it</p>
+    
+    <hr />
+    
+    <p>
+        <h4>.binzor</h4>
+        is the extension I created for the paste files. <br/>
+        The first 4 lines contain informations about the paste (name, accessibility, identifier, language) <br/>
+        The rest of the file is the paste's content. <br/>
+        <br/>
+        I believe this structure is easier to manipulate and efficencier than structures like <i>json, xml, etc...</i>
+        
+        <br/>
+        <br/>
+        If you plan to use the blazor service, make sure to change the API base url in Binzor.Program.cs
+        You can also decide to restraint CORS in BinzorApi.Program.cs
+        
+        <hr />
+        
+        <h4 style="color: red">Known issues</h4>
+        <p>
+            The codemirror editor's mode does not load correctly when reviewing a paste.
+            <br/>
+            This is because we set the editor's mode (from the paste's language) too early in the page load, the editor does not updates its mode.
+        </p>
+    </p>
+</div>
+
+@code {
+    
+}
