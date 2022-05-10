@@ -1,6 +1,6 @@
 # The Binzor project
     
-This projects let me discord razor.  
+This projects let me discover razor.  
 The application is not intended to be used as a serious pastebin-like website. However, if you like it, you can install it on a server and use it  
     
 ##  .binzor
